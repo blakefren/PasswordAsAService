@@ -1,0 +1,41 @@
+USER REQUIREMENTS
+
+ - minimal HTTP web service that exposes user and group info
+ - UNIX-like system, so data is usually locked away in /etc/passwd and /etc/group files
+ - "idiomatic HTTP framework of [my] choice"
+ - quality production code
+ - unit tests
+ - README documentation (include instructions for setup and running)
+ - read-only service (only HTTP GET requests)
+ - reflect changes to the underlying files while the service is running
+ - paths to the passwd and group files should be configurable (my choice of error if not found)
+
+GET Request list:
+ - /users
+    - return list of all users on the system
+ - /users/query[?name=<nq>][&uid=<uq>][&gid=<gq>][&comment=<cq>][&home=<hq>][&shell=<sq>]
+    - return list of users matching all of the specified query fields
+    - only support exact matches
+    - fields:
+        - name
+        - uid
+        - gid
+        - comment
+        - home
+        - shell
+ - /users/<uid>
+    - return single user with <uid>
+    - return 404 if not found
+ - /users/<uid>/groups
+    - return all groups for a given user
+ - /groups
+    - return list of all groups in the system (in /etc/group file)
+ - /groups/query[?name=<nq>][&gid=<gq>][&member=<mq1>[&member=<mq2>][&...]]
+    - return a list of groups matching any of the specified query fields
+    - fields:
+        - name (group name)
+        - gid
+        - member (user) (can supply several; maybe limit this?)
+ - /groups/<gid>
+    - return single group with <gid>
+    - return 404 if not found
