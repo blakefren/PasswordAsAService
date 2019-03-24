@@ -34,7 +34,7 @@ GET Request list:
     - fields:
         - name (group name)
         - gid
-        - member (user) (can supply several; maybe limit this?)
+        - member (user) (can supply several)
  - /groups/<gid>
     - return single group with <gid>
     - return 404 if not found

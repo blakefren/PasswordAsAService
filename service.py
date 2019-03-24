@@ -1,5 +1,6 @@
 """
-DOCSTRING HERE
+This module is a web API that returns information related to UNIX /etc/passwd and /etc/group files.
+It uses Flask and returns the data in JSON format.
 """
 
 
@@ -13,14 +14,14 @@ import copy
 # Set global user variables.
 last_user_time = None
 user_list = []
-user_path = os.path.join(os.getcwd(), 'etc', 'passwd', 'TEST')  # Change to supply non-default passwd file path.
+user_path = None  # os.path.join(os.getcwd(), 'etc', 'passwd')  # Change to supply non-default passwd file path.
 user_path_default = os.path.join(os.sep, 'etc', 'passwd')
 user_cols = ['name', 'uid', 'gid', 'comment', 'home', 'shell']
 
 # Set global group variables.
 last_group_time = None
 group_list = []
-group_path = os.path.join(os.getcwd(), 'etc', 'group', 'TEST')  # Change to supply non-default group file path.
+group_path = None  # os.path.join(os.getcwd(), 'etc', 'group', 'TEST')  # Change to supply non-default group file path.
 group_path_default = os.path.join(os.sep, 'etc', 'group')
 group_cols = ['name', 'gid', 'members']
 
@@ -247,6 +248,8 @@ def read_users():
         file_mod_time = os.path.getmtime(user_path)
         file_name = user_path
     except (OSError, TypeError):
+        print('\n\tError accessing provided user file.')
+        print('\tDefaulting to standard user file\n.')
         try:
             file_mod_time = os.path.getmtime(user_path_default)
             file_name = user_path_default
@@ -289,6 +292,8 @@ def read_groups():
         file_mod_time = os.path.getmtime(group_path)
         file_name = group_path
     except (OSError, TypeError):
+        print('\n\tError accessing provided group file.')
+        print('\tDefaulting to standard group file.\n')
         try:
             file_mod_time = os.path.getmtime(group_path_default)
             file_name = group_path_default
@@ -328,4 +333,5 @@ def convert_to_int(s):
 
 
 if __name__ == '__main__':
-    app.run()
+    # app.run(debug=True)  # Uncomment to run in debug mode.
+    app.run()  # Comment out to run in debug mode.
