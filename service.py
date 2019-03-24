@@ -13,15 +13,15 @@ import copy
 # Set global user variables.
 last_user_time = None
 user_list = []
-user_path = ''  # Change this from empty string to supply non-default passwd file path.
-user_path_default = '/etc/passwd'
+user_path = os.path.join(os.getcwd(), 'etc', 'passwd', 'TEST')  # Change to supply non-default passwd file path.
+user_path_default = os.path.join(os.sep, 'etc', 'passwd')
 user_cols = ['name', 'uid', 'gid', 'comment', 'home', 'shell']
 
 # Set global group variables.
 last_group_time = None
 group_list = []
-group_path = ''  # Change this from empty string to supply non-default group file path.
-group_path_default = '/etc/group'
+group_path = os.path.join(os.getcwd(), 'etc', 'group', 'TEST')  # Change to supply non-default group file path.
+group_path_default = os.path.join(os.sep, 'etc', 'group')
 group_cols = ['name', 'gid', 'members']
 
 # Initiate the service.
@@ -44,7 +44,7 @@ def get_users_all():
 
 
 @app.route('/users/query', methods=['GET'])
-def get_users_search():
+def get_users_query():
     """Return list of users matching search criteria (exact match)."""
 
     # These items will default to None if not present in querystring.
@@ -66,6 +66,7 @@ def get_users_search():
         for j in range(len(user_cols)):
             if in_args[j] is not None and in_args[j] != user[j]:
                 remove_user = True
+                break
 
         # If no match, add to list for removal.
         if remove_user:
@@ -95,7 +96,6 @@ def get_user_single(uid):
         if user[user_cols.index('uid')] == str(uid):
             found_user = user
             break
-
     if found_user is None:
         abort(404)
 
@@ -148,7 +148,7 @@ def get_groups_all():
 
 
 @app.route('/groups/query', methods=['GET'])
-def get_groups_search():
+def get_groups_query():
     """Return list of groups matching search criteria (exact match)."""
 
     # These items will default to None if not present in querystring.
@@ -172,12 +172,14 @@ def get_groups_search():
             if j != 2:
                 if in_args[j] is not None and in_args[j] != group[j]:
                     remove_group = True
+                    break
 
             # Check all members; if any are missing, remove.
             elif j == 2:
                 for member in in_args[2]:
                     if member not in group[2]:
                         remove_group = True
+                        break
 
         # If no match, add to list for removal.
         if remove_group:
@@ -238,31 +240,34 @@ def read_users():
     global last_user_time
     global user_list
 
-    # Check path is valid.
-    file_name = None
-    try:
-        if os.path.isfile(user_path):
-            file_name = user_path
-        elif os.path.isfile(user_path_default):
-            file_name = user_path_default
-        else:
-            raise FileNotFoundError
-    except FileNotFoundError:
-        abort(500)
-
     # Check last file modification time.
-    file_mod_time = os.path.getmtime(file_name)
-    if last_user_time == file_mod_time:
+    file_name = None
+    file_mod_time = None
+    try:
+        file_mod_time = os.path.getmtime(user_path)
+        file_name = user_path
+    except (OSError, TypeError):
+        try:
+            file_mod_time = os.path.getmtime(user_path_default)
+            file_name = user_path_default
+        except OSError:
+            abort(500)
+    if last_user_time == file_mod_time and user_list != []:
         return user_list
 
     # Read user file, store info as list of lists.
     user_list = []
     last_user_time = file_mod_time
-    with open(file_name, 'r', newline='') as passwd:
-        reader = csv.reader(passwd, delimiter=':')
-        for row in reader:
-            row.pop(1)  # Remove password field.
-            user_list.append(row)
+    try:
+        with open(file_name, 'r', newline='') as passwd:
+            reader = csv.reader(passwd, delimiter=':')
+            for row in reader:
+                row.pop(1)  # Remove password field.
+                if len(row) != len(user_cols):
+                    raise IndexError
+                user_list.append(row)
+    except (OSError, IndexError):
+        abort(500)
 
     return user_list
 
@@ -271,46 +276,51 @@ def read_groups():
     """
     Check last group file modify time.
     If different than stored time, read the file.
-    Return user info.
+    Return group info.
     """
 
     global last_group_time
     global group_list
 
-    # Check path is valid.
-    file_name = None
-    try:
-        if os.path.isfile(group_path):
-            file_name = group_path
-        elif os.path.isfile(group_path_default):
-            file_name = group_path_default
-        else:
-            raise FileNotFoundError
-    except FileNotFoundError:
-        abort(500)
-
     # Check last file modification time.
-    file_mod_time = os.path.getmtime(file_name)
-    if last_group_time == file_mod_time:
+    file_name = None
+    file_mod_time = None
+    try:
+        file_mod_time = os.path.getmtime(group_path)
+        file_name = group_path
+    except (OSError, TypeError):
+        try:
+            file_mod_time = os.path.getmtime(group_path_default)
+            file_name = group_path_default
+        except OSError:
+            abort(500)
+    if last_group_time == file_mod_time and group_list != []:
         return group_list
 
     # Read group file, store info as list of lists.
     group_list = []
     last_group_time = file_mod_time
-    with open(file_name, 'r', newline='') as group:
-        reader = csv.reader(group, delimiter=':')
-        for row in reader:
-            row.pop(1)  # Remove password field.
-            row[-1] = row[-1].split(',')  # Split member field from CSV to list.
-            row[-1] = [item.replace(' ', '') for item in row[-1]]  # Trim whitespace.
-            if len(row[-1]) == 1 and '' in row[-1]:
-                row[-1] = []  # Handle empty list case.
-            group_list.append(row)
+    try:
+        with open(file_name, 'r', newline='') as group:
+            reader = csv.reader(group, delimiter=':')
+            for row in reader:
+                row.pop(1)  # Remove password field.
+                if len(row) != len(group_cols):
+                    raise IndexError
+                row[-1] = row[-1].split(',')  # Split member field from CSV to list.
+                row[-1] = [item.replace(' ', '') for item in row[-1]]  # Trim whitespace.
+                if len(row[-1]) == 1 and '' in row[-1]:
+                    row[-1] = []  # Handle empty list case.
+                group_list.append(row)
+    except (OSError, IndexError):
+        abort(500)
 
     return group_list
 
 
 def convert_to_int(s):
+    """Convert any object to int if possible, otherwise return original object."""
+
     try:
         return int(s)
     except (ValueError, TypeError):
@@ -318,4 +328,4 @@ def convert_to_int(s):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()

@@ -2,7 +2,6 @@ USER REQUIREMENTS
 
  - minimal HTTP web service that exposes user and group info
  - UNIX-like system, so data is usually locked away in /etc/passwd and /etc/group files
- - "idiomatic HTTP framework of [my] choice"
  - quality production code
  - unit tests
  - README documentation (include instructions for setup and running)
