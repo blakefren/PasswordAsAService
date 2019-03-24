@@ -333,5 +333,7 @@ def convert_to_int(s):
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)  # Uncomment to run in debug mode.
-    app.run()  # Comment out to run in debug mode.
+    if __debug__:
+        app.run(debug=True)
+    else:
+        app.run()

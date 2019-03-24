@@ -22,8 +22,8 @@ Download the git repo or the zip file, and save to a directory on your system.
 NOTE: the service will exit with HTTP code 500 if the /etc/passwd and /etc/group files are not present in either the user-specified location (below) or the default Unix location.
 
 To run, you can either:
-* double-click the service.py file, or
-* input "python service.py" in a terminal window in the project directory, or
+* double-click the service.py file (will run in debug mode), or
+* input "python -O service.py" in a terminal window in the project directory, or
 * perform the following in a terminal window in the project directory:
     * Unix:
         * $ export FLASK_APP=service.py
@@ -41,11 +41,21 @@ You can run a sample test by sending a HTTP GET request to localhost:5000/users 
 ## Running the tests
 
 Run any of the included files under /tests/ to test each GET request type.
-If you want to run the service in debug mode, just follow the [Flask instructions](http://flask.pocoo.org/docs/1.0/quickstart/#debug-mode) if you're running the service via the "flask run" option, or uncomment the line "app.run(debug=True)" at the bottom of service.py if using one of the other two methods.
+If you want to run the service in debug mode, just follow the [Flask instructions](http://flask.pocoo.org/docs/1.0/quickstart/#debug-mode) if you're running the service via the "flask run" option. Alternatively, in the command-line option, run it without the "-O" flag ("python service.py"). Double-clicking the file will always run in debug mode.
 
 ### Break down into end to end tests
 
 (coming soon)
+
+API queries supported:
+* localhost:5000/users - returns list of all users in system
+* localhost:5000/users/query - returns list of users matching any querystring arguments (name/uid/gid/comment/home/shell)
+* localhost:5000/users/1234 - returns user with uid "1234"
+* localhost:5000/users/1234/groups - returns list of groups that user with uid "1234" is a member of
+* localhost:5000/groups - returns list of all groups in system
+* localhost:5000/groups/query - returns list of groups matching any querystring arguments (name/gid/member) (any number of members)
+* localhost:5000/groups/4321 - returns group with gid "4321"
+
 
 Explain what these tests test and why
 
