@@ -4,16 +4,15 @@ This is a python web API. It is intended to be used in a Unix-like system to exp
 
 ## Getting Started
 
-Instructions to set up on your machine for testing. You can also follow the [Flask - getting started](http://flask.pocoo.org/docs/1.0/quickstart/) documentation.
+You can also follow the [Flask - getting started](http://flask.pocoo.org/docs/1.0/quickstart/) documentation for general Flask setup info.
 
 ### Prerequisites
 
-In addition to Python 3.6 or newer, you'll need the following libraries:
+In addition to Python 3.6 or newer, you'll need the following packages:
 
 ```
 flask
-json
-pytest (for unit testing)
+nose (for unit testing)
 ```
 
 ### Installing
@@ -40,37 +39,39 @@ You can run a sample test by sending a HTTP GET request to localhost:5000/users 
 
 ## Running the tests
 
-Run any of the included files under /tests/ to test each GET request type.
+test_all.py contains all unit tests. The unit tests do the following:
+* Test each API method to ensure the expected HTTP return code.
+* Query each API method to check that the output is valid JSON.
+* Query each API method to check that the output has the correct data outputs.
+
+It does NOT check the service data against the file data. Test cases for that can be added if desired.
+
+To run unit tests, open a terminal window and navigate to the service directory. After installing nose, run the following command:
+'''
+nosetests
+'''
+
 If you want to run the service in debug mode, just follow the [Flask instructions](http://flask.pocoo.org/docs/1.0/quickstart/#debug-mode) if you're running the service via the "flask run" option. Alternatively, in the command-line option, run it without the "-O" flag ("python service.py"). Double-clicking the file will always run in debug mode.
 
-### Break down into end to end tests
-
-(coming soon)
-
-API queries supported:
-* localhost:5000/users - returns list of all users in system
-* localhost:5000/users/query - returns list of users matching any querystring arguments (name/uid/gid/comment/home/shell)
-* localhost:5000/users/1234 - returns user with uid "1234"
-* localhost:5000/users/1234/groups - returns list of groups that user with uid "1234" is a member of
-* localhost:5000/groups - returns list of all groups in system
-* localhost:5000/groups/query - returns list of groups matching any querystring arguments (name/gid/member) (any number of members)
-* localhost:5000/groups/4321 - returns group with gid "4321"
-
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+### API queries supported:
+'''
+localhost:5000/users - returns list of all users in system
+localhost:5000/users/query - returns list of users matching any querystring arguments (name/uid/gid/comment/home/shell)
+localhost:5000/users/1234 - returns user with uid "1234"
+localhost:5000/users/1234/groups - returns list of groups that user with uid "1234" is a member of
+localhost:5000/groups - returns list of all groups in system
+localhost:5000/groups/query - returns list of groups matching any querystring arguments (name/gid/member) (any number of members)
+localhost:5000/groups/4321 - returns group with gid "4321"
+'''
 
 ## Deployment
 
-As the [Flask documentation](http://flask.pocoo.org/docs/1.0/deploying/#deployment) says, it's not really built for production. In fact, please don't, because this service is just a project and is not secure. If you're really stuck on it, just follow instructions in the Flask documentation link above.
+As the [Flask documentation](http://flask.pocoo.org/docs/1.0/deploying/#deployment) says, it's not really built for production. In fact, please don't, because this service is just a toy and is not the type of thing to actually use. If you're really stuck on it, just follow instructions in the Flask documentation link above.
 
 ## Built With
 
 * [Flask](http://flask.pocoo.org/) - The web framework.
-* [pytest](https://docs.pytest.org/en/latest/) - Used to perform unit testing.
+* [nose](https://nose.readthedocs.io/) - Used to perform unit testing.
 
 ## Authors
 

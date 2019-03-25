@@ -21,9 +21,10 @@ user_cols = ['name', 'uid', 'gid', 'comment', 'home', 'shell']
 # Set global group variables.
 last_group_time = None
 group_list = []
-group_path = None  # os.path.join(os.getcwd(), 'etc', 'group', 'TEST')  # Change to supply non-default group file path.
+group_path = None  # os.path.join(os.getcwd(), 'etc', 'group')  # Change to supply non-default group file path.
 group_path_default = os.path.join(os.sep, 'etc', 'group')
-group_cols = ['name', 'gid', 'members']
+group_cols = ['name', 'gid', 'member']
+group_cols_output = ['name', 'gid', 'members']
 
 # Initiate the service.
 app = Flask(__name__)
@@ -124,10 +125,10 @@ def get_user_groups(uid):
     # Filter to list of groups.
     return_groups = []
     for group in read_groups():
-        if name in group[group_cols.index('members')]:
+        if name in group[group_cols.index('member')]:
             temp_json = {}
-            for j in range(len(group_cols)):
-                temp_json[group_cols[j]] = convert_to_int(group[j])
+            for j in range(len(group_cols_output)):
+                temp_json[group_cols_output[j]] = convert_to_int(group[j])
             return_groups.append(temp_json)
 
     return dumps(return_groups)
@@ -141,8 +142,8 @@ def get_groups_all():
     all_groups = []
     for group in read_groups():
         temp_json = {}
-        for j in range(len(group_cols)):
-            temp_json[group_cols[j]] = convert_to_int(group[j])
+        for j in range(len(group_cols_output)):
+            temp_json[group_cols_output[j]] = convert_to_int(group[j])
         all_groups.append(temp_json)
 
     return dumps(all_groups)
@@ -189,8 +190,8 @@ def get_groups_query():
         # If match, convert to JSON.
         else:
             temp_json = {}
-            for j in range(len(group_cols)):
-                temp_json[group_cols[j]] = convert_to_int(group[j])
+            for j in range(len(group_cols_output)):
+                temp_json[group_cols_output[j]] = convert_to_int(group[j])
             sorted_groups[i] = temp_json
 
     # Remove groups with no match.
@@ -216,8 +217,8 @@ def get_group_single(gid):
 
     # Convert group to JSON.
     return_json = {}
-    for i in range(len(group_cols)):
-        return_json[group_cols[i]] = convert_to_int(found_group[i])
+    for i in range(len(group_cols_output)):
+        return_json[group_cols_output[i]] = convert_to_int(found_group[i])
     return_json = dumps(return_json)
 
     return return_json
@@ -248,8 +249,8 @@ def read_users():
         file_mod_time = os.path.getmtime(user_path)
         file_name = user_path
     except (OSError, TypeError):
-        print('\n\tError accessing provided user file.')
-        print('\tDefaulting to standard user file\n.')
+        # print('\n\tError accessing provided user file.')
+        # print('\tDefaulting to standard user file\n.')
         try:
             file_mod_time = os.path.getmtime(user_path_default)
             file_name = user_path_default
@@ -292,8 +293,8 @@ def read_groups():
         file_mod_time = os.path.getmtime(group_path)
         file_name = group_path
     except (OSError, TypeError):
-        print('\n\tError accessing provided group file.')
-        print('\tDefaulting to standard group file.\n')
+        # print('\n\tError accessing provided group file.')
+        # print('\tDefaulting to standard group file.\n')
         try:
             file_mod_time = os.path.getmtime(group_path_default)
             file_name = group_path_default
