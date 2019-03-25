@@ -47,14 +47,16 @@ test_all.py contains all unit tests. The unit tests do the following:
 It does NOT check the service data against the file data. Test cases for that can be added if desired.
 
 To run unit tests, open a terminal window and navigate to the service directory. After installing nose, run the following command:
-'''
+
+```
 nosetests
-'''
+```
 
 If you want to run the service in debug mode, just follow the [Flask instructions](http://flask.pocoo.org/docs/1.0/quickstart/#debug-mode) if you're running the service via the "flask run" option. Alternatively, in the command-line option, run it without the "-O" flag ("python service.py"). Double-clicking the file will always run in debug mode.
 
 ### API queries supported:
-'''
+
+```
 localhost:5000/users - returns list of all users in system
 localhost:5000/users/query - returns list of users matching any querystring arguments (name/uid/gid/comment/home/shell)
 localhost:5000/users/1234 - returns user with uid "1234"
@@ -62,7 +64,7 @@ localhost:5000/users/1234/groups - returns list of groups that user with uid "12
 localhost:5000/groups - returns list of all groups in system
 localhost:5000/groups/query - returns list of groups matching any querystring arguments (name/gid/member) (any number of members)
 localhost:5000/groups/4321 - returns group with gid "4321"
-'''
+```
 
 ## Deployment
 
@@ -79,4 +81,4 @@ As the [Flask documentation](http://flask.pocoo.org/docs/1.0/deploying/#deployme
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the LICENSE.md file for details
